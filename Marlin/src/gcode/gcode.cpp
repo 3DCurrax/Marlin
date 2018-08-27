@@ -433,7 +433,9 @@ void GcodeSuite::process_next_command() {
 
       #if ENABLED(HAVE_CURRAX)
         case 130: 
-          M130(); break; // M130: CurraxTest
+          M130(); // M130: CurraxTest
+          KEEPALIVE_STATE(NOT_BUSY);
+          return; // "ok" already printed
       #endif
 
       #if HAS_POWER_SWITCH

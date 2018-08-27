@@ -34,7 +34,8 @@
 
 void GcodeSuite::M130() {
 
-  SERIAL_PROTOCOL("CurraxTest2");
+  SERIAL_PROTOCOL("ok: CurraxTest");
+  SERIAL_EOL();
 }
 
 #endif
