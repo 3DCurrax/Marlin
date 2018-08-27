@@ -1529,8 +1529,10 @@
   #define ENDSTOP0_PIN            25 //PA25 ENDSTOP0
   #define ENDSTOP1_PIN            27 //PA27 ENDSTOP1
   #define ENDSTOP2_PIN            33 //PB1  ENDSTOP2
-  #define ENDSTOP3_PIN            26 //PA26 ENDSTOP3
+  #define ENDSTOP3_PIN            26 //PA26 ENDSTOP
   #define RESIN_SW_PIN            2  //PA2 RESIN_SW
+
+  #define HAS_CURREX_SENSOR
 #endif
 
 #endif // CONFIGURATION_ADV_H

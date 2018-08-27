@@ -431,8 +431,10 @@ void GcodeSuite::process_next_command() {
         #endif
       #endif // BARICUDA
 
-      case 130: 
-        M130(); break; // M130: CurraxTest
+      #if ENABLED(HAVE_CURRAX)
+        case 130: 
+          M130(); break; // M130: CurraxTest
+      #endif
 
       #if HAS_POWER_SWITCH
         case 80: M80(); break;    // M80: Turn on Power Supply

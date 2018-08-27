@@ -529,7 +529,9 @@ private:
     #endif
   #endif
 
-  static void M130();
+ #if ENABLED(HAVE_CURRAX)
+    static void M130();
+  #endif
   
   #if HAS_HEATER_BED && HAS_TEMP_BED
     static void M140();

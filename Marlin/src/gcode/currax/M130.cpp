@@ -24,13 +24,17 @@
 #include "../../Marlin.h" // for pin_is_protected
 #include "../../inc/MarlinConfig.h"
 
+ 
+ 
+#if ENABLED(HAVE_CURRAX)
+ 
 /**
  * M130: CurraxTest
- *
- *  P<pin>  Pin number
  */
+
 void GcodeSuite::M130() {
 
-  SERIAL_PROTOCOL("CurraxTest1");
+  SERIAL_PROTOCOL("CurraxTest2");
 }
 
+#endif
