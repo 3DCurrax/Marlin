@@ -23,8 +23,9 @@ namespace CSen
 Share::Share()
 {
    mTimerCount=0;
-   mTimerModulo=1000;
+   mTimerModulo=100;
    mSeqNum=0;
+   mEnableFlag=false;
 
    mSensorQueue.initialize(cSensorQueueSize);
 }
@@ -57,7 +58,12 @@ void Share::onTimer()
    // Test the counter.
    if ((mTimerCount % mTimerModulo)==0)
    {
-      writeToQueue();
+      // If enabled then write to the queue.
+      if (mEnableFlag)
+      {
+         writeToQueue();
+      }
+      // Increment the sequence counter.
       mSeqNum++;
    }
 }
@@ -70,6 +76,8 @@ void Share::onTimer()
 
 void Share::writeToQueue()
 {
+   // Guard.
+   if (!mEnableFlag) return;
    // Guard. If the queue is full then exit.
    if (!mSensorQueue.isPut()) return;
 
@@ -93,6 +101,9 @@ void Share::writeToQueue()
 
 void Share::onIdle()
 {
+   // Guard.
+   if (!mEnableFlag) return;
+
    // Loop while the queue is not empty.
    while(mSensorQueue.isGet())
    {
@@ -102,7 +113,7 @@ void Share::onIdle()
 
       // Print the currax sensor state.
       char tString[64];
-      sprintf(tString,"CSenSample %d %d\n",
+      sprintf(tString,"csen sample %d %d\n",
          tRecord.mSeqNum,
          tRecord.mTimerCount);
       SERIAL_PROTOCOL(tString);

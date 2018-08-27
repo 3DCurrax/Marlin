@@ -41,4 +41,16 @@ void GcodeSuite::M130() {
   SERIAL_EOL();
 }
 
+/**
+ * M131 - Currax enable/disable sensor processing
+ */
+
+void GcodeSuite::M131() {
+
+  bool enable = parser.boolval('P');
+  if (enable) SERIAL_PROTOCOL("csen enable");
+  else        SERIAL_PROTOCOL("csen disable");
+  CSen::gShare.mEnableFlag = enable;
+}
+
 #endif

@@ -436,6 +436,8 @@ void GcodeSuite::process_next_command() {
           M130(); // M130: CurraxTest
           KEEPALIVE_STATE(NOT_BUSY);
           return; // "ok" already printed
+          
+        case 131: M131(); break;  // M131 - Currax enable/disable sensor processing
       #endif
 
       #if HAS_POWER_SWITCH

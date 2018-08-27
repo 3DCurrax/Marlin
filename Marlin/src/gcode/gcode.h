@@ -139,6 +139,7 @@
  * M128 - EtoP Open. (Requires BARICUDA)
  * M129 - EtoP Closed. (Requires BARICUDA)
  * M130 - CurraxTest
+ * M131 - Currax enable/disable sensor processing
  * M140 - Set bed target temp. S<temp>
  * M145 - Set heatup values for materials on the LCD. H<hotend> B<bed> F<fan speed> for S<material> (0=PLA, 1=ABS)
  * M149 - Set temperature units. (Requires TEMPERATURE_UNITS_SUPPORT)
@@ -531,6 +532,7 @@ private:
 
  #if ENABLED(HAVE_CURRAX)
     static void M130();
+    static void M131();
   #endif
   
   #if HAS_HEATER_BED && HAS_TEMP_BED

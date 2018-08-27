@@ -56,6 +56,10 @@ public:
    // according to the timer count and the timer modulo as above.
    int mSeqNum;
 
+   // If true then sensor processing is enabled. Sensors will be read
+   // and sensor values will be sent to the host.
+   bool mEnableFlag;
+   
    //***************************************************************************
    //***************************************************************************
    //***************************************************************************
