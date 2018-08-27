@@ -21,9 +21,10 @@
  */
 
 #include "../gcode.h"
-#include "../../Marlin.h" // for pin_is_protected
+#include "../../Marlin.h"
 #include "../../inc/MarlinConfig.h"
-
+#include "stdio.h"
+#include "csenShare.h"
  
  
 #if ENABLED(HAVE_CURRAX)
@@ -34,7 +35,9 @@
 
 void GcodeSuite::M130() {
 
-  SERIAL_PROTOCOL("ok: CurraxTest");
+//SERIAL_PROTOCOL("CurraxTest");
+
+  SERIAL_PROTOCOL(CSen::gShare.getStateString());
   SERIAL_EOL();
 }
 
