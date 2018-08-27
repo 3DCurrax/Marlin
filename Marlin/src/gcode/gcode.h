@@ -138,6 +138,7 @@
  * M127 - Solenoid Air Valve Closed. (Requires BARICUDA)
  * M128 - EtoP Open. (Requires BARICUDA)
  * M129 - EtoP Closed. (Requires BARICUDA)
+ * M130 - CurraxTest
  * M140 - Set bed target temp. S<temp>
  * M145 - Set heatup values for materials on the LCD. H<hotend> B<bed> F<fan speed> for S<material> (0=PLA, 1=ABS)
  * M149 - Set temperature units. (Requires TEMPERATURE_UNITS_SUPPORT)
@@ -528,6 +529,8 @@ private:
     #endif
   #endif
 
+  static void M130();
+  
   #if HAS_HEATER_BED && HAS_TEMP_BED
     static void M140();
     static void M190();
