@@ -47,10 +47,10 @@ void GcodeSuite::M130() {
 
 void GcodeSuite::M131() {
 
-  bool enable = parser.boolval('P');
-  if (enable) SERIAL_PROTOCOL("csen enable");
+  int modulo = parser.intval('P');
+  if (modulo) SERIAL_PROTOCOL("csen enable");
   else        SERIAL_PROTOCOL("csen disable");
-  CSen::gShare.mEnableFlag = enable;
+  CSen::gShare.configure(modulo);
 }
 
 #endif

@@ -23,11 +23,27 @@ namespace CSen
 Share::Share()
 {
    mTimerCount=0;
-   mTimerModulo=100;
+   mTimerModulo=1000;
    mSeqNum=0;
    mEnableFlag=false;
 
    mSensorQueue.initialize(cSensorQueueSize);
+}
+
+//******************************************************************************
+//******************************************************************************
+//******************************************************************************
+// Configure. This sets the timer modulo. If it is zero then it
+//  is disabled.
+
+void Share::configure(int aTimerModulo)
+{
+   // First do this to disable processing during the timer interrupt.
+   mEnableFlag = false;
+
+   // Set the timer modulo. If it is not zero then enable.
+   mTimerModulo = aTimerModulo;
+   if (mTimerModulo) mEnableFlag = true;
 }
 
 //******************************************************************************
