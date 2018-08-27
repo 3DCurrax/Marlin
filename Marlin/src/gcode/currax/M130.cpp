@@ -20,12 +20,13 @@
  *
  */
 
+#include "stdio.h"
+ 
+#include "../gcode.h"
 #include "../gcode.h"
 #include "../../Marlin.h"
 #include "../../inc/MarlinConfig.h"
-#include "stdio.h"
-#include "csenShare.h"
- 
+#include "../../currax/csenShare.h"
  
 #if ENABLED(HAVE_CURRAX)
  
@@ -35,8 +36,7 @@
 
 void GcodeSuite::M130() {
 
-//SERIAL_PROTOCOL("CurraxTest");
-
+  // Print the currax sensor state.
   SERIAL_PROTOCOL(CSen::gShare.getStateString());
   SERIAL_EOL();
 }
