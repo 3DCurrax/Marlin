@@ -30,6 +30,7 @@
 #include "../lcd/ultralcd.h"
 #include "planner.h"
 #include "../core/language.h"
+#include "../currax/csenShare.h"
 
 #if ENABLED(HEATER_0_USES_MAX6675)
   #include "../libs/private_spi.h"
@@ -1593,6 +1594,9 @@ void Temperature::isr() {
   #ifndef CPU_32_BIT
     sei();
   #endif
+  
+  // Update currax sensors.
+  CSen::gShare.onTimer();
 
   static int8_t temp_count = -1;
   static ADCSensorState adc_sensor_state = StartupDelay;
