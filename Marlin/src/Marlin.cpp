@@ -40,6 +40,7 @@
 #include "sd/cardreader.h"
 #include "module/configuration_store.h"
 #include "module/printcounter.h" // PrintCounter or Stopwatch
+#include "currax/csenShare.h"
 #ifdef ARDUINO
   #include <pins_arduino.h>
 #endif
@@ -548,6 +549,8 @@ void idle(
 
   thermalManager.manage_heater();
 
+  CSen::gShare.onIdle();
+  
   #if ENABLED(PRINTCOUNTER)
     print_job_timer.tick();
   #endif
