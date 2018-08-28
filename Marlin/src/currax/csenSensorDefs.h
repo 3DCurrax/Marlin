@@ -36,8 +36,9 @@ public:
    //***********************************************************************
    // Members
 
-   int    mSeqNum;      // Record sequence number 0..65536.  
-   int    mTimerCount;  // Timer count of sensor input.
+   int mSeqNum;      // Record sequence number 0..65536.  
+   int mTimerCount;  // Timer count of sensor input.
+   int mDropCount;   // Incremented when queue is full.
 
    //***********************************************************************
    //***********************************************************************

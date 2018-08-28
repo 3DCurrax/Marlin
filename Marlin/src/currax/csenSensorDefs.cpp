@@ -20,6 +20,7 @@ SampleRecord::SampleRecord()
 {
    mSeqNum = 0;
    mTimerCount = 0;
+   mDropCount = 0;
 }
 
 //******************************************************************************

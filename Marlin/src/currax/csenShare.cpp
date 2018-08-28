@@ -22,10 +22,11 @@ namespace CSen
 
 Share::Share()
 {
-   mTimerCount=0;
-   mTimerModulo=1000;
-   mSeqNum=0;
-   mEnableFlag=false;
+   mTimerCount = 0;
+   mTimerModulo = 1000;
+   mSeqNum = 0;
+   mEnableFlag = false;
+   mDropCount = 0;
 
    mSensorQueue.initialize(cSensorQueueSize);
 }
@@ -94,8 +95,13 @@ void Share::writeToQueue()
 {
    // Guard.
    if (!mEnableFlag) return;
+
    // Guard. If the queue is full then exit.
-   if (!mSensorQueue.isPut()) return;
+   if (!mSensorQueue.isPut())
+   {
+      mDropCount++;
+      return;
+   }
 
    // Fill a sample record with the current values.
    SampleRecord tRecord;
@@ -129,9 +135,10 @@ void Share::onIdle()
 
       // Print the currax sensor state.
       char tString[64];
-      sprintf(tString,"csen sample %d %d\n",
+      sprintf(tString,"csen sample %d %d %d\n",
          tRecord.mSeqNum,
-         tRecord.mTimerCount);
+         tRecord.mTimerCount,
+         tRecord.mDropCount);
       SERIAL_PROTOCOL(tString);
    }
 }

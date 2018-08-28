@@ -59,6 +59,9 @@ public:
    // If true then sensor processing is enabled. Sensors will be read
    // and sensor values will be sent to the host.
    bool mEnableFlag;
+
+   // Incremented when queue is full.
+   int mDropCount;
    
    //***************************************************************************
    //***************************************************************************
