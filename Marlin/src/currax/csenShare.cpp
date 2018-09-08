@@ -25,11 +25,14 @@ namespace CSen
 
 Share::Share()
 {
+   mQueueMode = 2;
+
    mTimerCount = 0;
    mTimerModulo = 1000;
    mSeqNum = 0;
    mEnableFlag = false;
    mDropCount = 0;
+   mIntQueueDropCount = 0;
 }
 
 //******************************************************************************
@@ -39,8 +42,14 @@ Share::Share()
 
 void Share::initialize()
 {
-   mSensorQueue.initialize(cSensorQueueSize);
-   LFIntQueue::initialize(cSensorQueueSize);
+   if (mQueueMode==1)
+   {
+      mSensorQueue.initialize(cSensorQueueSize);
+   }
+   else
+   {
+      LFIntQueue::initialize(cSensorQueueSize);
+   }
 }
 
 //******************************************************************************
@@ -108,24 +117,31 @@ void Share::writeToQueue()
    // Guard.
    if (!mEnableFlag) return;
 
-   // Guard. If the queue is full then exit.
-   if (!mSensorQueue.isPut())
+   if (mQueueMode==1)
    {
-      mDropCount++;
-      return;
+      // Guard. If the queue is full then exit.
+      if (!mSensorQueue.isPut())
+      {
+         mDropCount++;
+         return;
+      }
+
+      // Fill a sample record with the current values.
+      SampleRecord tRecord;
+      tRecord.mSeqNum = mSeqNum;
+      tRecord.mTimerCount = mTimerCount;
+
+      // Write the sample record to the queue.
+      mSensorQueue.put(tRecord);
    }
-
-   // Fill a sample record with the current values.
-   SampleRecord tRecord;
-   tRecord.mSeqNum = mSeqNum;
-   tRecord.mTimerCount = mTimerCount;
-   tRecord.mIntCount = 99;
-
-   // Write the sample record to the queue.
-   mSensorQueue.put(tRecord);
-
-   // Write the sample record to the queue.
-   LFIntQueue::tryWrite(mTimerCount);
+   else
+   {
+      // Write the timer count to the queue.
+      if (!LFIntQueue::tryWrite(mTimerCount))
+      {
+         mIntQueueDropCount++;
+      }
+   }
 }
 
 //******************************************************************************
@@ -142,29 +158,37 @@ void Share::onIdle()
    // Guard.
    if (!mEnableFlag) return;
 
-   // Try to read from the int queue.
-   int tIntCount = 0;
-   LFIntQueue::tryRead(&tIntCount);
-
-   // Loop while the queue is not empty.
-// while(mSensorQueue.isGet())
-   if (mSensorQueue.isGet())
+   if (mQueueMode==1)
    {
-      // Get a sensor sample record from the queue.
-      SampleRecord tRecord;
-      mSensorQueue.get(tRecord);
-      // Add the int count.
-      tRecord.mIntCount = tIntCount;
+      // Try to read from the queue.
+      if (mSensorQueue.isGet())
+      {
+         // Get a sensor sample record from the queue.
+         SampleRecord tRecord;
+         mSensorQueue.get(tRecord);
 
-      // Print the currax sensor state.
-      char tString[64];
-      sprintf(tString,"csen sample %d %d %d %d\n",
-         tRecord.mSeqNum,
-         tRecord.mTimerCount,
-         tRecord.mIntCount,
-         tRecord.mDropCount);
-      udi_cdc_multi_write_buf(1, tString, strlen(tString));
-    }
+         // Print the currax sensor state.
+         char tString[64];
+         sprintf(tString,"csen sample1 %d %d\n",
+            tRecord.mTimerCount,
+            tRecord.mDropCount);
+         udi_cdc_multi_write_buf(1, tString, strlen(tString));
+      }
+   }
+   else
+   {
+      // Try to read from the queue.
+      int tCount = 0;
+      if (LFIntQueue::tryRead(&tCount))
+      {
+         // Print the currax sensor state.
+         char tString[64];
+         sprintf(tString,"csen sample2 %d %d\n",
+            tCount,
+            mIntQueueDropCount);
+         udi_cdc_multi_write_buf(1, tString, strlen(tString));
+      }
+   }
 }
 
 //******************************************************************************

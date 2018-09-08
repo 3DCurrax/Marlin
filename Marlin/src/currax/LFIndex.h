@@ -1,29 +1,56 @@
+#pragma once
+
+#include <atomic>
+
 /*==============================================================================
-Description:
 ==============================================================================*/
 
 //******************************************************************************
 //******************************************************************************
 //******************************************************************************
 
-#include "csenSensorDefs.h"
+#pragma pack(push,1)
+typedef struct alignas(4) LFIndex
+{  
+   short int mIndex;  
+   short int mCount;  
 
-namespace CSen
+   LFIndex() noexcept
+   {
+      mIndex = 0;
+      mCount = 0;
+   }
+
+   LFIndex(short int aIndex,short int aCount) noexcept
+   {
+      mIndex = aIndex;
+      mCount = aCount;
+   }
+} LFIndex;
+#pragma pack(pop)
+
+//******************************************************************************
+//******************************************************************************
+//******************************************************************************
+
+inline bool operator==(const LFIndex& lhs, const LFIndex& rhs)
 {
-
-//******************************************************************************
-//******************************************************************************
-//******************************************************************************
-// Constructor
-
-SampleRecord::SampleRecord()
-{
-   mSeqNum = 0;
-   mTimerCount = 0;
-   mDropCount = 0;
+   return lhs.mIndex==rhs.mIndex && lhs.mCount==rhs.mCount;
 }
 
+inline bool operator!=(const LFIndex& lhs, const LFIndex& rhs)
+{
+   return lhs.mIndex!=rhs.mIndex && lhs.mCount!=rhs.mCount;
+}
+
+typedef std::atomic<LFIndex> AtomicLFIndex;
+
+struct AtomicLFIndexBlock 
+{  
+   AtomicLFIndex mX;
+   unsigned long long int mPadding[64/8 - 1];
+};
+
 //******************************************************************************
 //******************************************************************************
 //******************************************************************************
-}//namespace

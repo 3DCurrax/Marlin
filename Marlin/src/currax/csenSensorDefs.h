@@ -38,7 +38,6 @@ public:
 
    int mSeqNum;      // Record sequence number 0..65536.  
    int mTimerCount;  // Timer count of sensor input.
-   int mIntCount;    // Int queue count.
    int mDropCount;   // Incremented when queue is full.
 
    //***********************************************************************
