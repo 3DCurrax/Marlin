@@ -909,6 +909,8 @@ void setup() {
   #if ENABLED(PARKING_EXTRUDER)
     pe_magnet_init();
   #endif
+
+  CSen::gShare.initialize();
 }
 
 /**

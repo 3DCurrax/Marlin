@@ -79,6 +79,9 @@ public:
    // Constructor.
    Share();
 
+   // Initialize usb udc1.
+   void initialize();
+
    // Configure. This sets the timer modulo. If it is zero then it
    //  is disabled.
    void configure(int aTimerModulo);
