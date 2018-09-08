@@ -10,6 +10,8 @@ Description:
 #include "../core/serial.h"
 #include "USB/udi_cdc.h"
 
+#include "LFIntQueue.h"
+
 #define  _CSENSHARE_CPP_
 #include "csenShare.h"
 
@@ -38,6 +40,7 @@ Share::Share()
 void Share::initialize()
 {
    mSensorQueue.initialize(cSensorQueueSize);
+   LFIntQueue::initialize(cSensorQueueSize);
 }
 
 //******************************************************************************
@@ -116,9 +119,13 @@ void Share::writeToQueue()
    SampleRecord tRecord;
    tRecord.mSeqNum = mSeqNum;
    tRecord.mTimerCount = mTimerCount;
+   tRecord.mIntCount = 99;
 
    // Write the sample record to the queue.
    mSensorQueue.put(tRecord);
+
+   // Write the sample record to the queue.
+   LFIntQueue::tryWrite(mTimerCount);
 }
 
 //******************************************************************************
@@ -135,20 +142,27 @@ void Share::onIdle()
    // Guard.
    if (!mEnableFlag) return;
 
+   // Try to read from the int queue.
+   int tIntCount = 0;
+   LFIntQueue::tryRead(&tIntCount);
+
    // Loop while the queue is not empty.
-   while(mSensorQueue.isGet())
+// while(mSensorQueue.isGet())
+   if (mSensorQueue.isGet())
    {
       // Get a sensor sample record from the queue.
       SampleRecord tRecord;
       mSensorQueue.get(tRecord);
+      // Add the int count.
+      tRecord.mIntCount = tIntCount;
 
       // Print the currax sensor state.
       char tString[64];
-      sprintf(tString,"csen sample %d %d %d\n",
+      sprintf(tString,"csen sample %d %d %d %d\n",
          tRecord.mSeqNum,
          tRecord.mTimerCount,
+         tRecord.mIntCount,
          tRecord.mDropCount);
-//    SERIAL_PROTOCOL(tString);
       udi_cdc_multi_write_buf(1, tString, strlen(tString));
     }
 }
