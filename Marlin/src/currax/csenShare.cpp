@@ -8,6 +8,7 @@ Description:
 
 #include "stdio.h"
 #include "../core/serial.h"
+#include "USB/udi_cdc.h"
 
 #define  _CSENSHARE_CPP_
 #include "csenShare.h"
@@ -139,8 +140,9 @@ void Share::onIdle()
          tRecord.mSeqNum,
          tRecord.mTimerCount,
          tRecord.mDropCount);
-      SERIAL_PROTOCOL(tString);
-   }
+//    SERIAL_PROTOCOL(tString);
+      udi_cdc_multi_write_buf(1, tString, strlen(tString));
+    }
 }
 
 //******************************************************************************
