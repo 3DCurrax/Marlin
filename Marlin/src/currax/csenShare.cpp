@@ -28,8 +28,6 @@ Share::Share()
    mSeqNum = 0;
    mEnableFlag = false;
    mDropCount = 0;
-
-   mSensorQueue.initialize(cSensorQueueSize);
 }
 
 //******************************************************************************
@@ -39,10 +37,7 @@ Share::Share()
 
 void Share::initialize()
 {
-      // Print an initial string.
-      char tString[64];
-      sprintf(tString,"csen init\n");
-      udi_cdc_multi_write_buf(1, tString, strlen(tString));
+   mSensorQueue.initialize(cSensorQueueSize);
 }
 
 //******************************************************************************
