@@ -6,9 +6,7 @@ Description:
 //******************************************************************************
 //******************************************************************************
 
-#include "stdio.h"
-#include "../core/serial.h"
-#include "USB/udi_cdc.h"
+#include "csen_cdc.h"
 
 #include "LFIntQueue.h"
 
@@ -21,7 +19,7 @@ namespace CSen
 //******************************************************************************
 //******************************************************************************
 //******************************************************************************
-// Constructor
+// Constructor.
 
 Share::Share()
 {
@@ -172,7 +170,7 @@ void Share::onIdle()
          sprintf(tString,"csen sample1 %d %d\n",
             tRecord.mTimerCount,
             tRecord.mDropCount);
-         udi_cdc_multi_write_buf(1, tString, strlen(tString));
+         csen_cdc_write(tString, strlen(tString));
       }
    }
    else
@@ -186,7 +184,7 @@ void Share::onIdle()
          sprintf(tString,"csen sample2 %d %d\n",
             tCount,
             mIntQueueDropCount);
-         udi_cdc_multi_write_buf(1, tString, strlen(tString));
+         csen_cdc_write(tString, strlen(tString));
       }
    }
 }

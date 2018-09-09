@@ -26,7 +26,7 @@
 #include "../gcode.h"
 #include "../../Marlin.h"
 #include "../../inc/MarlinConfig.h"
-#include "../../currax/csenShare.h"
+#include "../../currax/csen_central.h"
  
 #if ENABLED(HAVE_CURRAX)
  
@@ -37,7 +37,7 @@
 void GcodeSuite::M130() {
 
   // Print the currax sensor state.
-  SERIAL_PROTOCOL(CSen::gShare.getStateString());
+  SERIAL_PROTOCOL(csen_get_state_string());
   SERIAL_EOL();
 }
 
@@ -50,7 +50,7 @@ void GcodeSuite::M131() {
   int modulo = parser.intval('P');
   if (modulo) SERIAL_PROTOCOL("csen enable");
   else        SERIAL_PROTOCOL("csen disable");
-  CSen::gShare.configure(modulo);
+  csen_configure(modulo);
 }
 
 #endif

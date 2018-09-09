@@ -40,7 +40,8 @@
 #include "sd/cardreader.h"
 #include "module/configuration_store.h"
 #include "module/printcounter.h" // PrintCounter or Stopwatch
-#include "currax/csenShare.h"
+#include "currax/csen_central.h"
+
 #ifdef ARDUINO
   #include <pins_arduino.h>
 #endif
@@ -549,7 +550,7 @@ void idle(
 
   thermalManager.manage_heater();
 
-  CSen::gShare.onIdle();
+  csen_on_idle();
   
   #if ENABLED(PRINTCOUNTER)
     print_job_timer.tick();
@@ -910,7 +911,7 @@ void setup() {
     pe_magnet_init();
   #endif
 
-  CSen::gShare.initialize();
+  csen_initialize();
 }
 
 /**
