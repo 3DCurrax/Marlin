@@ -6,11 +6,22 @@
 //******************************************************************************
 
 #include "stdafx.h"
+#include <stdint.h>
+
+#include "interrupt.h"
 
 #include "ccCriticalSection.h"
 
 namespace CC
 {
+
+//******************************************************************************
+//******************************************************************************
+//******************************************************************************
+// Global flag, zero if interrupts were enabled prior to disabling 
+// interrupts.
+ 
+uint32_t r_primask = 0;
 
 //******************************************************************************
 //******************************************************************************
@@ -31,6 +42,12 @@ void* createCriticalSection()
 
 void enterCriticalSection(void* aCriticalSection)
 {
+    cpu_irq_enter_critical();
+    return;
+   // Get the current interrupt enable state. It is zero if interrupts are
+   // enabled.
+   r_primask = __get_PRIMASK();
+   __disable_irq();
 }
 
 //******************************************************************************
@@ -40,6 +57,13 @@ void enterCriticalSection(void* aCriticalSection)
 
 void leaveCriticalSection(void* aCriticalSection)
 {
+    cpu_irq_leave_critical();
+    return;
+   // If interrupts were enabled prior to disabling them then enable them.
+   if (r_primask==0)
+   {
+      __enable_irq();
+   }
 }
 
 //******************************************************************************

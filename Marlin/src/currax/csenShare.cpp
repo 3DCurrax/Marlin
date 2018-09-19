@@ -6,9 +6,8 @@ Description:
 //******************************************************************************
 //******************************************************************************
 
+#include "stdafx.h"
 #include "csen_cdc.h"
-
-#include "LFIntQueue.h"
 
 #define  _CSENSHARE_CPP_
 #include "csenShare.h"
@@ -23,14 +22,11 @@ namespace CSen
 
 Share::Share()
 {
-   mQueueMode = 2;
-
+   mEnableFlag = false;
    mTimerCount = 0;
    mTimerModulo = 1000;
    mSeqNum = 0;
-   mEnableFlag = false;
    mDropCount = 0;
-   mIntQueueDropCount = 0;
 }
 
 //******************************************************************************
@@ -40,14 +36,7 @@ Share::Share()
 
 void Share::initialize()
 {
-   if (mQueueMode==1)
-   {
-      mSensorQueue.initialize(cSensorQueueSize);
-   }
-   else
-   {
-      LFIntQueue::initialize(cSensorQueueSize);
-   }
+   mIntQueue.initialize(cSensorQueueSize);
 }
 
 //******************************************************************************
@@ -88,20 +77,19 @@ char* Share::getStateString()
 
 void Share::onTimer()
 {
-   // Increment the timer isr counter.
-   mTimerCount++;
+   // Guard.
+   if (!mEnableFlag) return;
 
    // Test the counter.
    if ((mTimerCount % mTimerModulo)==0)
    {
-      // If enabled then write to the queue.
-      if (mEnableFlag)
-      {
-         writeToQueue();
-      }
+      writeToQueue();
       // Increment the sequence counter.
       mSeqNum++;
    }
+
+   // Increment the timer isr counter.
+   mTimerCount++;
 }
 
 //******************************************************************************
@@ -115,31 +103,12 @@ void Share::writeToQueue()
    // Guard.
    if (!mEnableFlag) return;
 
-   if (mQueueMode==1)
+   // Write the timer count to the queue.
+   if (!mIntQueue.tryWrite(mTimerCount))
    {
-      // Guard. If the queue is full then exit.
-      if (!mSensorQueue.isPut())
-      {
-         mDropCount++;
-         return;
-      }
-
-      // Fill a sample record with the current values.
-      SampleRecord tRecord;
-      tRecord.mSeqNum = mSeqNum;
-      tRecord.mTimerCount = mTimerCount;
-
-      // Write the sample record to the queue.
-      mSensorQueue.put(tRecord);
+      mDropCount++;
    }
-   else
-   {
-      // Write the timer count to the queue.
-      if (!LFIntQueue::tryWrite(mTimerCount))
-      {
-         mIntQueueDropCount++;
-      }
-   }
+   
 }
 
 //******************************************************************************
@@ -156,36 +125,16 @@ void Share::onIdle()
    // Guard.
    if (!mEnableFlag) return;
 
-   if (mQueueMode==1)
+   // Try to read from the queue.
+   int tTimerCount = 0;
+   if (mIntQueue.tryRead(&tTimerCount))
    {
-      // Try to read from the queue.
-      if (mSensorQueue.isGet())
-      {
-         // Get a sensor sample record from the queue.
-         SampleRecord tRecord;
-         mSensorQueue.get(tRecord);
-
-         // Print the currax sensor state.
-         char tString[64];
-         sprintf(tString,"csen sample1 %d %d\n",
-            tRecord.mTimerCount,
-            tRecord.mDropCount);
-         csen_cdc_write(tString, strlen(tString));
-      }
-   }
-   else
-   {
-      // Try to read from the queue.
-      int tCount = 0;
-      if (LFIntQueue::tryRead(&tCount))
-      {
-         // Print the currax sensor state.
-         char tString[64];
-         sprintf(tString,"csen sample2 %d %d\n",
-            tCount,
-            mIntQueueDropCount);
-         csen_cdc_write(tString, strlen(tString));
-      }
+      // Print the currax sensor state.
+      char tString[64];
+      sprintf(tString,"csen intqueue %d %d\n",
+         tTimerCount,
+         mDropCount);
+      csen_cdc_write(tString, strlen(tString));
    }
 }
 
