@@ -15,12 +15,8 @@ against concurrency contentions.
 
 It is thread safe for separate multiple writer and single reader threads.
 
-It implements the Michael and Scott algorithm for blocking queues. It
-uses critcal sections for mutex protection. It maintains storage for the
-objects by implementing a free list that also uses critical section mutex
-protection.
-
-
+It is based on the single writer single reader queue with mutual
+exclusion critical sections added.
 
 ==============================================================================*/
 //******************************************************************************
@@ -29,6 +25,7 @@ protection.
 
 #include <stdlib.h>
 #include <new>
+
 #include "ccDefs.h"
 #include "cc_functions.h"
 #include "ccMemoryPtr.h"
@@ -40,65 +37,6 @@ protection.
 
 namespace CC
 {
-//******************************************************************************
-//******************************************************************************
-//******************************************************************************
-// State variables for the stack. These are located in a separate class
-// so that they can be located in external memory.
-
-class LCValueQueueState
-{
-public:
-
-   //***************************************************************************
-   //***************************************************************************
-   //***************************************************************************
-   // Class.
-
-   // This returns the number of bytes that an instance of this class
-   // will need to be allocated for it.
-   static int getMemorySize()
-   {
-      return cc_round_upto16(sizeof(LCValueQueueState));
-   }
-
-   //***************************************************************************
-   //***************************************************************************
-   //***************************************************************************
-   // Members.
-
-   // Number of elements allocated.
-   int mNumElements;
-   int mPutIndex;
-   int mGetIndex;
-
-   //***************************************************************************
-   //***************************************************************************
-   //***************************************************************************
-   // Methods.
-
-   // Constructor.
-   LCValueQueueState()
-   {
-      // All null
-      mNumElements = 0;
-      mPutIndex = 0;
-      mGetIndex = 0;
-   }
-
-   // Initialize.
-   void initialize(int aNumElements,bool aConstructorFlag)
-   {
-      // Do not initialize, if already initialized.
-      if (!aConstructorFlag) return;
-
-      // Allocate for one extra dummy node.
-      mNumElements = aNumElements + 1;
-      mPutIndex = 0;
-      mGetIndex = 0;
-   }
-};
-
 //******************************************************************************
 //******************************************************************************
 //******************************************************************************
@@ -118,16 +56,14 @@ public:
    {
    public:
       // Members.
-      int mStateSize;
       int mElementArraySize;
       int mMemorySize;
 
       // Calculate and store memory sizes.
       MemorySize(int aNumElements)
       {
-         mStateSize         = LCValueQueueState::getMemorySize();
          mElementArraySize  = cc_round_upto16(cNewArrayExtraMemory + (aNumElements + 1)*sizeof(Element));
-         mMemorySize = mStateSize + mElementArraySize;
+         mMemorySize = mElementArraySize;
       }
    };
 
@@ -159,14 +95,22 @@ public:
    // on the system heap at initialization.
    void* mMemory;
 
-   // State variables for the queue. These are located in a separate class
-   // so that they can be located in externale memory.
-   LCValueQueueState* mX;
-
    // Array of values, storage for the values.
    // Size is NumElements + 1.
    // Index range is 0..NumElements.
    Element* mElement;
+
+   //***************************************************************************
+   //***************************************************************************
+   //***************************************************************************
+   // Members.
+
+   // Number of elements allocated.
+   int mNumElements;
+
+   // Queue array indices.
+   int mPutIndex;
+   int mGetIndex;
 
    //***************************************************************************
    //***************************************************************************
@@ -184,14 +128,12 @@ public:
    // Constructor.
    LCValueQueue()
    {
-      // All null.
-      mX = 0;
       mOwnMemoryFlag = false;
       mMemory = 0;
-
-      // All null
       mElement = 0;
-
+      mNumElements = 0;
+      mPutIndex = 0;
+      mGetIndex = 0;
       mCriticalSection = createCriticalSection();
    }
 
@@ -242,39 +184,20 @@ public:
       // Calculate memory addresses.
       MemoryPtr tMemoryPtr(mMemory);
 
-      char* tStateMemory        = tMemoryPtr.cfetch_add(tMemorySize.mStateSize);
       char* tElementArrayMemory = tMemoryPtr.cfetch_add(tMemorySize.mElementArraySize);
 
-      // Construct the state.
-      if (aConstructorFlag)
-      {
-         // Call the constructor.
-         mX = new(tStateMemory)LCValueQueueState;
-      }
-      else
-      {
-         // The constructor has already been called.
-         mX = (LCValueQueueState*)tStateMemory;
-      }
-      // Initialize the state.
-      mX->initialize(aNumElements,aConstructorFlag);
-
       // Construct the arrays.
-      if (aConstructorFlag)
-      {
-         // Call the constructor.
-         mElement = new(tElementArrayMemory)Element[mX->mNumElements];
-      }
-      else
-      {
-         // The constructor has already been called.
-         mElement = (Element*)tElementArrayMemory;
-      }
+      mElement = new(tElementArrayMemory)Element[mNumElements];
 
       //************************************************************************
       //************************************************************************
       //************************************************************************
       // Initialize variables.
+
+      // Allocate for one extra dummy node.
+      mNumElements = aNumElements + 1;
+      mPutIndex = 0;
+      mGetIndex = 0;
    }
 
    //***************************************************************************
@@ -304,8 +227,8 @@ public:
 
    int size()
    {
-      int tSize = mX->mPutIndex - mX->mGetIndex;
-      if (tSize < 0) tSize = mX->mNumElements + tSize;
+      int tSize = mPutIndex - mGetIndex;
+      if (tSize < 0) tSize = mNumElements + tSize;
       return tSize;
    }
 
@@ -331,9 +254,9 @@ public:
       enterCriticalSection(mCriticalSection);
 
       // Test if the queue is full.
-      int tSize = mX->mPutIndex - mX->mGetIndex;
-      if (tSize < 0) tSize = mX->mNumElements + tSize;
-      if (tSize > mX->mNumElements - 2)
+      int tSize = mPutIndex - mGetIndex;
+      if (tSize < 0) tSize = mNumElements + tSize;
+      if (tSize > mNumElements - 2)
       {
          // Unlock.
          leaveCriticalSection(mCriticalSection);
@@ -341,12 +264,12 @@ public:
       }
 
       // Local put index.
-      int tPutIndex = mX->mPutIndex;
+      int tPutIndex = mPutIndex;
       // Copy the source element into the element at the queue put index
       mElement[tPutIndex] = aElement;
       // Advance the put index.
-      if(++tPutIndex == mX->mNumElements) tPutIndex = 0;
-      mX->mPutIndex = tPutIndex;
+      if(++tPutIndex == mNumElements) tPutIndex = 0;
+      mPutIndex = tPutIndex;
 
       // Unlock.
       leaveCriticalSection(mCriticalSection);
@@ -367,17 +290,17 @@ public:
    bool tryRead(Element* aValue)
    {
       // Test if the queue is empty.
-      int tSize = mX->mPutIndex - mX->mGetIndex;
-      if (tSize < 0) tSize = mX->mNumElements + tSize;
+      int tSize = mPutIndex - mGetIndex;
+      if (tSize < 0) tSize = mNumElements + tSize;
       if (tSize == 0) return false;
 
       // Local index
-      int tGetIndex = mX->mGetIndex;
+      int tGetIndex = mGetIndex;
       // Copy the queue array element at the get index
       *aValue = mElement[tGetIndex];
       // Advance the get index
-      if(++tGetIndex == mX->mNumElements) tGetIndex = 0;
-      mX->mGetIndex = tGetIndex;
+      if(++tGetIndex == mNumElements) tGetIndex = 0;
+      mGetIndex = tGetIndex;
 
       // Done.
       return true;
