@@ -1,53 +1,33 @@
+#pragma once
+
 /*==============================================================================
-Description:
+Block header class.
 ==============================================================================*/
 
 //******************************************************************************
 //******************************************************************************
 //******************************************************************************
+#include "ccBlockPool.h"
 
-#include "MainMemory.h"
-#include "csenShare.h"
-#include "csen_central.h"
-
-using namespace CSen;
-
-//******************************************************************************
-//******************************************************************************
-//******************************************************************************
-
-// Initialize the package. This is called from the setup routine.
-void csen_initialize()
+namespace CC
 {
-   main_memory_initialize();
-   gShare.initialize();
-}
-
-// Configure. This sets the timer modulo. If it is zero then it
-// is disabled.
-void csen_configure(int aTimerModulo)
-{
-   gShare.configure(aTimerModulo);
-}
-
-// Return the state as a string.
-char* csen_get_state_string()
-{
-   return gShare.getStateString();
-}
-
-// This is called by the temperature timer isr. 
-void csen_on_timer()
-{
-   gShare.onTimer();
-}
-
-// This is called during the main loop idle processing. 
-void csen_on_idle()
-{
-   gShare.onIdle();
-}
 
 //******************************************************************************
 //******************************************************************************
 //******************************************************************************
+// This is a header that is placed at the start of every block that is 
+// allocated from the block array.
+
+typedef struct BlockHeader
+{
+   // Unique memory handle for a block.
+   BlockHandle mBlockHandle;
+} BlockHeader;
+
+// This structure must not take up more than sixteen bytes.
+static const int cBlockHeaderSize = 16;
+
+//******************************************************************************
+//******************************************************************************
+//******************************************************************************
+}//namespace

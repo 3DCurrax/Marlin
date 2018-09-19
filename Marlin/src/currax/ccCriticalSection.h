@@ -1,53 +1,40 @@
+#pragma once
+
 /*==============================================================================
-Description:
 ==============================================================================*/
 
 //******************************************************************************
 //******************************************************************************
 //******************************************************************************
 
-#include "MainMemory.h"
-#include "csenShare.h"
-#include "csen_central.h"
-
-using namespace CSen;
-
-//******************************************************************************
-//******************************************************************************
-//******************************************************************************
-
-// Initialize the package. This is called from the setup routine.
-void csen_initialize()
+namespace CC
 {
-   main_memory_initialize();
-   gShare.initialize();
-}
-
-// Configure. This sets the timer modulo. If it is zero then it
-// is disabled.
-void csen_configure(int aTimerModulo)
-{
-   gShare.configure(aTimerModulo);
-}
-
-// Return the state as a string.
-char* csen_get_state_string()
-{
-   return gShare.getStateString();
-}
-
-// This is called by the temperature timer isr. 
-void csen_on_timer()
-{
-   gShare.onTimer();
-}
-
-// This is called during the main loop idle processing. 
-void csen_on_idle()
-{
-   gShare.onIdle();
-}
 
 //******************************************************************************
 //******************************************************************************
 //******************************************************************************
+// These functions provide a synchronization lock that is used to protect
+// access to critical sections of code. These should be used around short
+// sections that do not block. These functions are intended to be cross
+// platform. They use a void* general purpose variable.
+
+// Created a critical section. Pass the returned code to the following
+// functions.
+void* createCriticalSection();
+
+// Enter a critical section. This is used to lock a resource for a short
+// time interval.
+void enterCriticalSection(void* aCriticalSection);
+
+// Leave a critical section. This is used to unlock a resource.
+void leaveCriticalSection(void* aCriticalSection);
+
+// Destroy a critical section.
+void destroyCriticalSection(void* aCriticalSection);
+
+//******************************************************************************
+//******************************************************************************
+//******************************************************************************
+}//namespace
+
+
