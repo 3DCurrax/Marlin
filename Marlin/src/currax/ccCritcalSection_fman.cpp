@@ -8,8 +8,8 @@
 #include "stdafx.h"
 #include <stdint.h>
 
-//#include "interrupt_sam_nvic.h"
-#include "interrupt.h"
+//#include "interrupt.h"
+#include "interrupt/interrupt_sam_nvic.h"
 
 #include "ccCriticalSection.h"
 
