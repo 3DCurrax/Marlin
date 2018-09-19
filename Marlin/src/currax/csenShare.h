@@ -69,7 +69,7 @@ public:
    // Members:
 
    // Integer queue.
-   CC::LCValueQueue<int> mIntQueue;
+   CC::LCValueQueue<void*> mPointerQueue;
 
    //***************************************************************************
    //***************************************************************************
