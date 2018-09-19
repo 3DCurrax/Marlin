@@ -42,12 +42,15 @@ void* createCriticalSection()
 
 void enterCriticalSection(void* aCriticalSection)
 {
-    cpu_irq_enter_critical();
-    return;
-   // Get the current interrupt enable state. It is zero if interrupts are
-   // enabled.
-   r_primask = __get_PRIMASK();
-   __disable_irq();
+   if (cpu_irq_is_enabled())
+   {
+      cpu_irq_disable();
+      cpu_irq_prev_interrupt_state = true;
+   }
+   else
+   {
+      cpu_irq_prev_interrupt_state = false;
+   }
 }
 
 //******************************************************************************
@@ -57,12 +60,9 @@ void enterCriticalSection(void* aCriticalSection)
 
 void leaveCriticalSection(void* aCriticalSection)
 {
-    cpu_irq_leave_critical();
-    return;
-   // If interrupts were enabled prior to disabling them then enable them.
-   if (r_primask==0)
+	if (cpu_irq_prev_interrupt_state)
    {
-      __enable_irq();
+		cpu_irq_enable();
    }
 }
 
