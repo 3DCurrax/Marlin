@@ -9,6 +9,7 @@ Description:
 #include "stdafx.h"
 #include "ris_cdc.h"
 #include "fcomMsg.h"
+#include "fcomMsgBase.h"
 
 #define  _CSENSHARE_CPP_
 #include "csenShare.h"
@@ -38,6 +39,7 @@ Share::Share()
 void Share::initialize()
 {
    mPointerQueue.initialize(cSensorQueueSize);
+   mSerialMsgPort.configure(&mMsgMonkeyCreator,0,0,0);
 }
 
 //******************************************************************************
@@ -140,14 +142,8 @@ void Share::onIdle()
    FCom::SampleMsg* tMsg = 0;
    if (mPointerQueue.tryRead((void**)&tMsg))
    {
-      // Print the currax sensor state.
-      char tString[64];
-      sprintf(tString,"csen queue %d %d\n",
-         tMsg->mTimerCount,
-         mDropCount);
-      ris_cdc_write(tString, strlen(tString));
-      // Delete the message.
-      FCom::destroyMsg(tMsg);
+      // If there was a message then send it to the host.
+      mSerialMsgPort.doSendMsg(tMsg);
    }
 }
 
