@@ -12,7 +12,7 @@ Currax sensor processing unit cdc interface.
 // isolate the sensor code from the feynman code.
 
    // This sends bytes to udc1 (the seconds usb endpoint).
-   void csen_cdc_write(const void* aBuffer,int aSize);
+   void ris_cdc_write(const void* aBuffer,int aSize);
 
 //******************************************************************************
 //******************************************************************************

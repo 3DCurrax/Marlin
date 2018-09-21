@@ -7,7 +7,7 @@ Description:
 //******************************************************************************
 
 #include "stdafx.h"
-#include "csen_cdc.h"
+#include "ris_cdc.h"
 #include "fcomMsg.h"
 
 #define  _CSENSHARE_CPP_
@@ -142,10 +142,10 @@ void Share::onIdle()
    {
       // Print the currax sensor state.
       char tString[64];
-      sprintf(tString,"csen intqueue %d %d\n",
+      sprintf(tString,"csen queue %d %d\n",
          tMsg->mTimerCount,
          mDropCount);
-      csen_cdc_write(tString, strlen(tString));
+      ris_cdc_write(tString, strlen(tString));
       // Delete the message.
       FCom::destroyMsg(tMsg);
    }

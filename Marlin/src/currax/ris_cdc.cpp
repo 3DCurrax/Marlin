@@ -6,13 +6,14 @@
 //******************************************************************************
 
 #include "USB/udi_cdc.h"
+#include "ris_cdc.h"
 
 //******************************************************************************
 //******************************************************************************
 //******************************************************************************
 
 // This sends bytes to udc1 (the seconds usb endpoint).
-void csen_cdc_write(const void* aBuffer,int aSize)
+void ris_cdc_write(const void* aBuffer,int aSize)
 {
    udi_cdc_multi_write_buf(1, aBuffer, (iram_size_t)aSize);
 }
