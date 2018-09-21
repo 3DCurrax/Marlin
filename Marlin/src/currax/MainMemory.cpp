@@ -1,8 +1,8 @@
+
 #include "stdafx.h"
 
 #include "ccBlockPool.h"
-#include "someBlockPoolIndex.h"
-#include "someMyBlockX.h"
+#include "fcomMsg.h"
 
 //******************************************************************************
 //******************************************************************************
@@ -24,12 +24,11 @@ void main_memory_initialize()
 
    // Create block pool.
    tBlockPoolParms.reset();
-   tBlockPoolParms.mPoolIndex     = Some::cBlockPoolIndex_MyBlockX;
-   tBlockPoolParms.mBlockPoolType = CC::cBlockPoolType_LCFreeList;
-   tBlockPoolParms.mNumBlocks     = 100;
-   tBlockPoolParms.mBlockSize     = sizeof(Some::MyBlockX);
-   tBlockPoolParms.mNoThrowFlag   = true;
+   tBlockPoolParms.mPoolIndex = FCom::cSampleMsg;
+   tBlockPoolParms.mBlockSize = sizeof(FCom::SampleMsg);
+   tBlockPoolParms.mNumBlocks = 100;
    CC::createBlockPool(&tBlockPoolParms);
+
 }
 
 //******************************************************************************

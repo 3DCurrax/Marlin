@@ -8,12 +8,10 @@ Description:
 
 #include "stdafx.h"
 #include "csen_cdc.h"
-#include "someMyBlockX.h"
+#include "fcomMsg.h"
 
 #define  _CSENSHARE_CPP_
 #include "csenShare.h"
-
-using namespace Some;
 
 namespace CSen
 {
@@ -106,18 +104,18 @@ void Share::writeToQueue()
    // Guard.
    if (!mEnableFlag) return;
 
-   // Try to create a block.
-   MyBlockX* tBlock = MyBlockX::create();
-   tBlock->mCode1 = mTimerCount;
+   // Try to create a message.
+   FCom::SampleMsg* tMsg = (FCom::SampleMsg*)FCom::createMsg(FCom::cSampleMsg);
+   tMsg->mTimerCount = mTimerCount;
 
-   // Test if the block was created.
-   if (tBlock)
+   // Test if the message was created.
+   if (tMsg)
    {
-      // Try to write the block to the pointer queue.
-      if (!mPointerQueue.tryWrite((void*)tBlock))
+      // Try to write the message to the pointer queue.
+      if (!mPointerQueue.tryWrite((void*)tMsg))
       {
          // The pointer queue was full.
-         delete tBlock;
+         FCom::destroyMsg(tMsg);
          mDropCount++;
       }
    }
@@ -138,18 +136,18 @@ void Share::onIdle()
    // Guard.
    if (!mEnableFlag) return;
 
-   // Try to read a block from the pointer queue.
-   MyBlockX* tBlock = 0;
-   if (mPointerQueue.tryRead((void**)&tBlock))
+   // Try to read a message from the pointer queue.
+   FCom::SampleMsg* tMsg = 0;
+   if (mPointerQueue.tryRead((void**)&tMsg))
    {
       // Print the currax sensor state.
       char tString[64];
       sprintf(tString,"csen intqueue %d %d\n",
-         tBlock->mCode1,
+         tMsg->mTimerCount,
          mDropCount);
       csen_cdc_write(tString, strlen(tString));
-      // Delete the block.
-      delete tBlock;
+      // Delete the message.
+      FCom::destroyMsg(tMsg);
    }
 }
 
