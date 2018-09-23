@@ -12,6 +12,8 @@
 #include "risSerialHeaderBuffer.h"
 
 #include "hw_cdc.h"
+
+#define  _FCOMSGPORT_CPP_
 #include "fcomMsgPort.h"
 
 namespace FCom

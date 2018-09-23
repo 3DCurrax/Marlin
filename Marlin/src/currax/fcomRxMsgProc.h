@@ -65,7 +65,7 @@ public:
 //******************************************************************************
 // Global singular instance.
 
-#ifdef _FCOMMSGPORT_CPP_
+#ifdef    _FCOMRXMSGPROC_CPP_
           RxMsgProc gRxMsgProc;
 #else
    extern RxMsgProc gRxMsgProc;

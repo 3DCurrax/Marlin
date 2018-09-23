@@ -9,6 +9,7 @@
 #include "hw_cdc.h"
 #include "fcomMsgPort.h"
 
+#define _FCOMRXMSGPROC_CPP_
 #include "fcomRxMsgProc.h"
 
 namespace FCom

@@ -135,7 +135,7 @@ public:
 //******************************************************************************
 // Global singular instance.
 
-#ifdef _FCOMMSGPORT_CPP_
+#ifdef    _FCOMSGPORT_CPP_
           MsgPort gMsgPort;
 #else
    extern MsgPort gMsgPort;

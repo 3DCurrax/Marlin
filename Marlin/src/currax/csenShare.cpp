@@ -85,7 +85,7 @@ void Share::onTimer()
 {
    // Guard.
    if (!mEnableFlag) return;
-   if (!mTimerModulo == 0) return;
+   if (mTimerModulo == 0) return;
 
    // Increment the counter.
    mTimerCount++;
