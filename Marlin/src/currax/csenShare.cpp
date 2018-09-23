@@ -7,9 +7,11 @@ Description:
 //******************************************************************************
 
 #include "stdafx.h"
-#include "ris_cdc.h"
+#include "hw_cdc.h"
 #include "fcomMsg.h"
 #include "fcomMsgBase.h"
+#include "fcomMsgPort.h"
+#include "fcomRxMsgProc.h"
 
 #define  _CSENSHARE_CPP_
 #include "csenShare.h"
@@ -38,8 +40,8 @@ Share::Share()
 
 void Share::initialize()
 {
-   mPointerQueue.initialize(cSensorQueueSize);
-   mSerialMsgPort.configure(&mMsgMonkeyCreator,0,0,0);
+   mTxPointerQueue.initialize(cSensorQueueSize);
+   FCom::gMsgPort.initialize();
 }
 
 //******************************************************************************
@@ -74,37 +76,25 @@ char* Share::getStateString()
 //******************************************************************************
 //******************************************************************************
 //******************************************************************************
-// Read the sensors and store their values in the queue.
-//
-// This is called by the temperature timer isr. 
+// This is called by the temperature timer isr.
+// 
+// Periodically create a sample message and write it to the transmit
+// pointer queue.
 
 void Share::onTimer()
 {
    // Guard.
    if (!mEnableFlag) return;
+   if (!mTimerModulo == 0) return;
 
-   // Test the counter.
-   if ((mTimerCount % mTimerModulo)==0)
-   {
-      writeToQueue();
-      // Increment the sequence counter.
-      mSeqNum++;
-   }
-
-   // Increment the timer isr counter.
+   // Increment the counter.
    mTimerCount++;
-}
 
-//******************************************************************************
-//******************************************************************************
-//******************************************************************************
-// Write to the queue. This is called by the ontimer routine at a rate
-// that is determined by the time modulo.
+   // Test the counter against the modulo.
+   if ((mTimerCount % mTimerModulo) != 0) return;
 
-void Share::writeToQueue()
-{
-   // Guard.
-   if (!mEnableFlag) return;
+   // Increment the sequence number.
+   mSeqNum++;
 
    // Try to create a message.
    FCom::SampleMsg* tMsg = (FCom::SampleMsg*)FCom::createMsg(FCom::cSampleMsg);
@@ -114,36 +104,44 @@ void Share::writeToQueue()
    if (tMsg)
    {
       // Try to write the message to the pointer queue.
-      if (!mPointerQueue.tryWrite((void*)tMsg))
+      if (!mTxPointerQueue.tryWrite(tMsg))
       {
          // The pointer queue was full.
          FCom::destroyMsg(tMsg);
          mDropCount++;
       }
    }
-   
 }
 
 //******************************************************************************
 //******************************************************************************
 //******************************************************************************
-// If the queue is not empty then read the records from it that were
-// written by the isr, format them, and send them to the host via
-// the usb serial cahnnel.
-//
-// This is called during the main loop idle processing. 
+// This is called during the main loop idle processing.
+// 
+// Read from the transmit pointer queue and send available messages to
+// the host via the comm channel.
+// 
+// Poll the comm channel for messages received from the host and process
+// them when they are available.
 
 void Share::onIdle()
 {
-   // Guard.
-   if (!mEnableFlag) return;
+   FCom::BaseMsg* tMsg = 0;
 
-   // Try to read a message from the pointer queue.
-   FCom::SampleMsg* tMsg = 0;
-   if (mPointerQueue.tryRead((void**)&tMsg))
+   // Try to read a message from the transmit pointer queue.
+   tMsg = 0;
+   if (mTxPointerQueue.tryRead(&tMsg))
    {
       // If there was a message then send it to the host.
-      mSerialMsgPort.doSendMsg(tMsg);
+      FCom::gMsgPort.doSendMsg(tMsg);
+   }
+
+   // Poll the message port for a received message.
+   tMsg = 0;
+   if (FCom::gMsgPort.doPollForRxMsg(tMsg))
+   {
+      // If there was a message then process it.
+      FCom::gRxMsgProc.processRxMsg(tMsg);
    }
 }
 

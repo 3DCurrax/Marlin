@@ -8,7 +8,6 @@ Currax sensor processing unit.
 //******************************************************************************
 //******************************************************************************
 
-#include "risSerialMsgPort.h"
 #include "ccLCValueQueue.h"
 #include "csenSensorDefs.h"
 #include "fcomMsgBase.h"
@@ -70,19 +69,8 @@ public:
    //***************************************************************************
    // Members:
 
-   // Serial port.
-   Ris::SerialMsgPort mSerialMsgPort;
-
-   // Message monkey creator.
-   FCom::MsgMonkeyCreator mMsgMonkeyCreator;
-
-   //***************************************************************************
-   //***************************************************************************
-   //***************************************************************************
-   // Members:
-
-   // Integer queue.
-   CC::LCValueQueue<void*> mPointerQueue;
+   // Transmit message pointer queue.
+   CC::LCValueQueue<FCom::BaseMsg*> mTxPointerQueue;
 
    //***************************************************************************
    //***************************************************************************
@@ -112,27 +100,26 @@ public:
    //***************************************************************************
    // Methods:
 
-   // Read the sensors and store their values in the queue.
-   //
-   // This is called by the temperature timer isr. 
+   // This is called by the temperature timer isr.
+   // 
+   // Periodically create a sample message and write it to the transmit
+   // pointer queue.
    void onTimer();
 
-   // Write to the queue. This is called by the ontimer routine at a rate
-   // that is determined by the time modulo.
-   void writeToQueue();
-
-   // If the queue is not empty then read the records from it that were
-   // written by the isr, format them, and send them to the host via
-   // the usb serial cahnnel.
-   //
-   // This is called during the main loop idle processing. 
+   // This is called during the main loop idle processing.
+   // 
+   // Read from the transmit pointer queue and send available messages to
+   // the host via the comm channel.
+   // 
+   // Poll the comm channel for messages received from the host and process
+   // them when they are available.
    void onIdle();
 };
 
 //******************************************************************************
 //******************************************************************************
 //******************************************************************************
-// Global instance
+// Global singular instance.
 
 #ifdef _CSENSHARE_CPP_
           Share gShare;
