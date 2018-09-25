@@ -47,19 +47,9 @@ public:
    // Timer isr counter.
    int mTimerCount;
 
-   // Timer isr counter modulo.
-   // If timer count % timer modulo == 0 then the queue is written to.
-   // The timer isr currently executes at 1000hz, so if this is 100 then the
-   // queue will be written to at 10hz.
-   int mTimerModulo;
-
    // Sequence number. This is incremented when the queue is written to,
    // according to the timer count and the timer modulo as above.
    int mSeqNum;
-
-   // If true then sensor processing is enabled. Sensors will be read
-   // and sensor values will be sent to the host.
-   bool mEnableFlag;
 
    // Incremented when queue is full.
    int mDropCount;

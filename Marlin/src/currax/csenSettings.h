@@ -1,64 +1,53 @@
 #pragma once
 
 /*==============================================================================
-FCom serial receive message handler.
+Currax sensor processing unit.
 ==============================================================================*/
 
 //******************************************************************************
 //******************************************************************************
 //******************************************************************************
 
-#include "fcomMsg.h"
-
 //******************************************************************************
 //******************************************************************************
 //******************************************************************************
 
-namespace FCom
+namespace CSen
 {
 
 //******************************************************************************
 //******************************************************************************
 //******************************************************************************
-// Receive message processor for the fcom byte content messages that are
-// received from the udc1 usb port. It is passed a message and it calls
-// a specific message handler according to the message type.
+// This class provides for currax sensor processing. It provides for reading
+// the sensors periodically from a timer interrupt service routine and 
+// writing values to a queue. The queue is read during idle processing
+// in the main loop and values are sent to the host via the usb serial 
+// channel.
 
-class  RxMsgProc
+class Settings
 {
 public:
+   //***************************************************************************
+   //***************************************************************************
+   //***************************************************************************
+   // Members:
 
-   //***************************************************************************
-   //***************************************************************************
-   //***************************************************************************
-   // Members.
+   // If true then sensor processing is enabled. Sensors will be read
+   // and sensor values will be sent to the host.
+   bool mEnableFlag;
 
-   //***************************************************************************
+   // Timer isr counter modulo.
+   // If timer count % timer modulo == 0 then the queue is written to.
+   // The timer isr currently executes at 1000hz, so if this is 100 then the
+   // queue will be written to at 10hz.
+   int mTimerModulo;
+
    //***************************************************************************
    //***************************************************************************
    // Methods.
 
    // Constructor.
-   RxMsgProc();
-
-   //***************************************************************************
-   //***************************************************************************
-   //***************************************************************************
-   // Methods.
-
-   // Receive message handler. It calls one of the following specific 
-   // message handlers, according to the message type.    
-   void processRxMsg (BaseMsg* aMsg);
-
-   //***************************************************************************
-   //***************************************************************************
-   //***************************************************************************
-   // Methods.
-
-   // Specific receive message handlers.
-   void processRxMsg (TestMsg*        aRxMsg);
-   void processRxMsg (SettingsMsg*    aRxMsg);
-   void processRxMsg (EchoRequestMsg* aRxMsg);
+   Settings();
 };
 
 //******************************************************************************
@@ -66,13 +55,14 @@ public:
 //******************************************************************************
 // Global singular instance.
 
-#ifdef    _FCOMRXMSGPROC_CPP_
-          RxMsgProc gRxMsgProc;
+#ifdef _CSENSETTINGS_CPP_
+          Settings gSettings;
 #else
-   extern RxMsgProc gRxMsgProc;
+   extern Settings gSettings;
 #endif
 
 //******************************************************************************
 //******************************************************************************
 //******************************************************************************
 }//namespace
+

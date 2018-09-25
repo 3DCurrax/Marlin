@@ -12,6 +12,7 @@ Description:
 #include "fcomMsgBase.h"
 #include "fcomMsgPort.h"
 #include "fcomRxMsgProc.h"
+#include "csenSettings.h"
 
 #define  _CSENMAINPROC_CPP_
 #include "csenMainProc.h"
@@ -26,9 +27,7 @@ namespace CSen
 
 MainProc::MainProc()
 {
-   mEnableFlag = false;
    mTimerCount = 0;
-   mTimerModulo = 1000;
    mSeqNum = 0;
    mDropCount = 0;
 }
@@ -53,11 +52,11 @@ void MainProc::initialize()
 void MainProc::configure(int aTimerModulo)
 {
    // First do this to disable processing during the timer interrupt.
-   mEnableFlag = false;
+   gSettings.mEnableFlag = false;
 
    // Set the timer modulo. If it is not zero then enable.
-   mTimerModulo = aTimerModulo;
-   if (mTimerModulo) mEnableFlag = true;
+   gSettings.mTimerModulo = aTimerModulo;
+   if (gSettings.mTimerModulo) gSettings.mEnableFlag = true;
 }
 
 //******************************************************************************
@@ -84,14 +83,14 @@ char* MainProc::getStateString()
 void MainProc::onTimer()
 {
    // Guard.
-   if (!mEnableFlag) return;
-   if (mTimerModulo == 0) return;
+   if (!gSettings.mEnableFlag) return;
+   if (gSettings.mTimerModulo == 0) return;
 
    // Increment the counter.
    mTimerCount++;
 
    // Test the counter against the modulo.
-   if ((mTimerCount % mTimerModulo) != 0) return;
+   if ((mTimerCount % gSettings.mTimerModulo) != 0) return;
 
    // Increment the sequence number.
    mSeqNum++;

@@ -8,6 +8,7 @@
 
 #include "hw_cdc.h"
 #include "fcomMsgPort.h"
+#include "csenSettings.h"
 
 #define _FCOMRXMSGPROC_CPP_
 #include "fcomRxMsgProc.h"
@@ -41,6 +42,9 @@ void RxMsgProc::processRxMsg(BaseMsg* aMsg)
       case FCom::cTestMsg :
          processRxMsg((FCom::TestMsg*)aMsg);
          break;
+      case FCom::cSettingsMsg :
+         processRxMsg((FCom::SettingsMsg*)aMsg);
+         break;
       case FCom::cEchoRequestMsg :
          processRxMsg((FCom::EchoRequestMsg*)aMsg);
          break;
@@ -59,6 +63,24 @@ void RxMsgProc::processRxMsg(BaseMsg* aMsg)
 void RxMsgProc::processRxMsg(FCom::TestMsg* aMsg)
 {
    hw_cdc0_print("RxMsgProc::processRxMsg_TestMsg %d",aMsg->mCode1);
+   destroyMsg(aMsg);
+}
+
+//******************************************************************************
+//******************************************************************************
+//******************************************************************************
+// Rx message handler - SettingsMsg
+
+void RxMsgProc::processRxMsg(FCom::SettingsMsg* aMsg)
+{
+   // First do this to disable processing during the timer interrupt.
+   CSen::gSettings.mEnableFlag = false;
+
+   // Copy the settings variables from the received message.
+   CSen::gSettings.mTimerModulo = aMsg->mTimerModulo;
+   CSen::gSettings.mEnableFlag  = aMsg->mEnable;
+
+   // Destroy the received message.
    destroyMsg(aMsg);
 }
 

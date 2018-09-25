@@ -76,6 +76,27 @@ void StatusMsg::copyToFrom(Ris::ByteBuffer* aBuffer)
 //******************************************************************************
 //******************************************************************************
 
+SettingsMsg::SettingsMsg()
+{
+   mMessageType = cSettingsMsg;
+   mEnable = false;
+   mTimerModulo = 0;
+}
+
+void SettingsMsg::copyToFrom(Ris::ByteBuffer* aBuffer)
+{
+   mHeader.headerCopyToFrom(aBuffer, this);
+
+   aBuffer->copy(&mEnable);
+   aBuffer->copy(&mTimerModulo);
+
+   mHeader.headerReCopyToFrom(aBuffer, this);
+}
+
+//******************************************************************************
+//******************************************************************************
+//******************************************************************************
+
 EchoRequestMsg::EchoRequestMsg ()
 {
    mMessageType = cEchoRequestMsg;
@@ -151,6 +172,9 @@ void* createMsg(int aMessageType)
       break;
    case cStatusMsg:
       tMsg = new (tBlockPointer) StatusMsg;
+      break;
+   case cSettingsMsg:
+      tMsg = new (tBlockPointer) SettingsMsg;
       break;
    case cEchoRequestMsg:
       tMsg = new (tBlockPointer) EchoRequestMsg;

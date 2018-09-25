@@ -42,9 +42,10 @@ namespace FCom
 static const int cUnspecifiedMsg   = 0;
 static const int cTestMsg          = 1;
 static const int cSampleMsg        = 2;
-static const int cStatusMsg        = 3;
-static const int cEchoRequestMsg   = 4;
-static const int cEchoResponseMsg  = 5;
+static const int cSettingsMsg      = 3;
+static const int cStatusMsg        = 4;
+static const int cEchoRequestMsg   = 5;
+static const int cEchoResponseMsg  = 6;
 
 //******************************************************************************
 //******************************************************************************
@@ -117,6 +118,31 @@ public:
    // Methods.
 
    StatusMsg();
+   void copyToFrom(Ris::ByteBuffer* aBuffer);
+};
+
+//******************************************************************************
+//******************************************************************************
+//******************************************************************************
+
+class SettingsMsg : public BaseMsg
+{
+public:
+
+   //***************************************************************************
+   //***************************************************************************
+   //***************************************************************************
+   // Members.
+
+   bool mEnable;
+   int  mTimerModulo;
+
+   //***************************************************************************
+   //***************************************************************************
+   //***************************************************************************
+   // Methods.
+
+   SettingsMsg();
    void copyToFrom(Ris::ByteBuffer* aBuffer);
 };
 

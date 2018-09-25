@@ -31,13 +31,6 @@ void main_memory_initialize()
 
    // Create block pool.
    tBlockPoolParms.reset();
-   tBlockPoolParms.mPoolIndex = FCom::cSampleMsg;
-   tBlockPoolParms.mBlockSize = sizeof(FCom::SampleMsg);
-   tBlockPoolParms.mNumBlocks = 50;
-   CC::createBlockPool(&tBlockPoolParms);
-
-   // Create block pool.
-   tBlockPoolParms.reset();
    tBlockPoolParms.mPoolIndex = FCom::cEchoRequestMsg;
    tBlockPoolParms.mBlockSize = sizeof(FCom::EchoRequestMsg);
    tBlockPoolParms.mNumBlocks = 2;
@@ -49,7 +42,22 @@ void main_memory_initialize()
    tBlockPoolParms.mBlockSize = sizeof(FCom::EchoResponseMsg);
    tBlockPoolParms.mNumBlocks = 2;
    CC::createBlockPool(&tBlockPoolParms);
+
+   // Create block pool.
+   tBlockPoolParms.reset();
+   tBlockPoolParms.mPoolIndex = FCom::cSampleMsg;
+   tBlockPoolParms.mBlockSize = sizeof(FCom::SampleMsg);
+   tBlockPoolParms.mNumBlocks = 50;
+   CC::createBlockPool(&tBlockPoolParms);
+
+   // Create block pool.
+   tBlockPoolParms.reset();
+   tBlockPoolParms.mPoolIndex = FCom::cSettingsMsg;
+   tBlockPoolParms.mBlockSize = sizeof(FCom::SettingsMsg);
+   tBlockPoolParms.mNumBlocks = 2;
+   CC::createBlockPool(&tBlockPoolParms);
 }
+
 //******************************************************************************
 //******************************************************************************
 //******************************************************************************
