@@ -7,7 +7,7 @@ Description:
 //******************************************************************************
 
 #include "MainMemory.h"
-#include "csenShare.h"
+#include "csenMainProc.h"
 #include "csen_central.h"
 
 using namespace CSen;
@@ -20,32 +20,32 @@ using namespace CSen;
 void csen_initialize()
 {
    main_memory_initialize();
-   gShare.initialize();
+   gMainProc.initialize();
 }
 
 // Configure. This sets the timer modulo. If it is zero then it
 // is disabled.
 void csen_configure(int aTimerModulo)
 {
-   gShare.configure(aTimerModulo);
+   gMainProc.configure(aTimerModulo);
 }
 
 // Return the state as a string.
 char* csen_get_state_string()
 {
-   return gShare.getStateString();
+   return gMainProc.getStateString();
 }
 
 // This is called by the temperature timer isr. 
 void csen_on_timer()
 {
-   gShare.onTimer();
+   gMainProc.onTimer();
 }
 
 // This is called during the main loop idle processing. 
 void csen_on_idle()
 {
-   gShare.onIdle();
+   gMainProc.onIdle();
 }
 
 //******************************************************************************
