@@ -8,6 +8,7 @@
 #include "stdafx.h"
 
 #include "fcomMsg.h"
+
 #include "fcomMsgBase.h"
 
 
