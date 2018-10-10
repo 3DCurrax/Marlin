@@ -138,8 +138,6 @@
  * M127 - Solenoid Air Valve Closed. (Requires BARICUDA)
  * M128 - EtoP Open. (Requires BARICUDA)
  * M129 - EtoP Closed. (Requires BARICUDA)
- * M130 - CurraxTest
- * M131 - Currax enable/disable sensor processing
  * M140 - Set bed target temp. S<temp>
  * M145 - Set heatup values for materials on the LCD. H<hotend> B<bed> F<fan speed> for S<material> (0=PLA, 1=ABS)
  * M149 - Set temperature units. (Requires TEMPERATURE_UNITS_SUPPORT)
@@ -210,6 +208,7 @@
  * M480 - Read temperature ADC data "M480"
  * M481 - Read currax endstops "M481"
  * M482 - Read temperature data in Celsius "M482"
+ * M483 - Constantly moving stepper "M483 S1" Enables movement. "M483 S0" Stops movement.
  * M500 - Store parameters in EEPROM. (Requires EEPROM_SETTINGS)
  * M501 - Restore parameters from EEPROM. (Requires EEPROM_SETTINGS)
  * M502 - Revert to the default "factory settings". ** Does not write them to EEPROM! **
@@ -530,11 +529,6 @@ private:
     #endif
   #endif
 
- #if ENABLED(HAVE_CURRAX)
-    static void M130();
-    static void M131();
-  #endif
-  
   #if HAS_HEATER_BED && HAS_TEMP_BED
     static void M140();
     static void M190();
@@ -636,6 +630,7 @@ private:
   static void M480();
   static void M481();
   static void M482();
+  static void M483();
  #endif
 
   #if HAS_BUZZER

@@ -1582,6 +1582,7 @@ HAL_TEMP_TIMER_ISR {
 }
 
 volatile bool Temperature::in_temp_isr = false;
+volatile bool constant_moving_stepper = false;
 
 void Temperature::isr() {
   // The stepper ISR can interrupt this ISR. When it does it re-enables this ISR
@@ -1594,10 +1595,17 @@ void Temperature::isr() {
   #ifndef CPU_32_BIT
     sei();
   #endif
-  
+
+  #if ENABLED(HAVE_CURRAX)
+  if(constant_moving_stepper) {
+     static bool yStepPinState = 0;
+     digitalWrite(Y_STEP_PIN,yStepPinState); //Y_STEP_PIN
+     yStepPinState = !yStepPinState;
+  }
   // Update currax sensors.
   csen_on_timer();
-
+  #endif
+   
   static int8_t temp_count = -1;
   static ADCSensorState adc_sensor_state = StartupDelay;
   static uint8_t pwm_count = _BV(SOFT_PWM_SCALE);

@@ -431,15 +431,6 @@ void GcodeSuite::process_next_command() {
         #endif
       #endif // BARICUDA
 
-      #if ENABLED(HAVE_CURRAX)
-        case 130: 
-          M130(); // M130: CurraxTest
-          KEEPALIVE_STATE(NOT_BUSY);
-          return; // "ok" already printed
-          
-        case 131: M131(); break;  // M131 - Currax enable/disable sensor processing
-      #endif
-
       #if HAS_POWER_SWITCH
         case 80: M80(); break;    // M80: Turn on Power Supply
       #endif
@@ -657,7 +648,8 @@ void GcodeSuite::process_next_command() {
       case 480: M480(); break;    // M480: Read temperature adc data
       case 481: M481(); break;    // M481: Read currax endstops
       case 482: M482(); break;    // M482: Read temperature data in Celsius
-    #endif
+	  case 483: M483(); break;	  // M483: Turn on/off Constant Moving Stepper
+	#endif
 
       case 500: M500(); break;    // M500: Store settings in EEPROM
       case 501: M501(); break;    // M501: Read settings from EEPROM

@@ -24,17 +24,17 @@
 #undef E1_MS1_PIN
 #undef E1_MS2_PIN
 
-#define X_STEP_PIN          43 //PB11 S2_STEP
-#define X_DIR_PIN           42 //PB10 S2_DIR
+#define X_STEP_PIN          -1 //PB11 S2_STEP
+#define X_DIR_PIN           -1 //PB10 S2_DIR
 #define X_ENABLE_PIN        -1
-#define X_MIN_PIN           -1
-#define X_MAX_PIN           -1
-#define X_TMC2130_CS        30 //PA30 S2_nCS
-#define X_CS_PIN            30 //PA30 S2_nCS
+#define X_MIN_PIN           -1 
+#define X_MAX_PIN           25 //PA25 ENDSTOP0 (Z2 Endstop J12)
+#define X_TMC2130_CS        -1 //PA30 S2_nCS
+#define X_CS_PIN            -1 //PA30 S2_nCS
 
 #define Y_STEP_PIN          43 //PB11 S2_STEP
 #define Y_DIR_PIN           42 //PB10 S2_DIR
-#define Y_ENABLE_PIN        -1
+#define Y_ENABLE_PIN         5
 #define Y_MIN_PIN           -1
 #define Y_MAX_PIN           -1
 #define Y_TMC2130_CS        30 //PA30 S2_nCS
@@ -43,16 +43,16 @@
 #define Z_STEP_PIN         23 //PA23 S0_STEP
 #define Z_DIR_PIN          46 //PB14 S0_DIR
 #define Z_ENABLE_PIN        5 //PA5 STEP_EN
-#define Z_MIN_PIN          27 //PA27 ENDSTOP1 (Z Endstop)
-#define Z_MAX_PIN          -1
+#define Z_MIN_PIN          27 //PA27 ENDSTOP1 (Z1 Endstop)
+#define Z_MAX_PIN          33 //PB1 J15 ENDSTOP2 (G38.3 Endstop)
 #define Z_TMC2130_CS       45 //PB13 S0_nCS
 #define Z_CS_PIN           45 //PB13 S0_nCS
 
-#define E0_STEP_PIN        43 //PB11 S2_STEP
-#define E0_DIR_PIN         42 //PB10 S2_DIR
+#define E0_STEP_PIN        -1 //PB11 S2_STEP
+#define E0_DIR_PIN         -1 //PB10 S2_DIR
 #define E0_ENABLE_PIN       1 //PA1 CAB_LED //TODO allow and test a -1 value. Need to define this pin for now to prevent compiler a error.
-#define E0_TMC2130_CS      30 //PA30 S2_nCS
-#define E0_CS_PIN          30 //PA30 S2_nCS
+#define E0_TMC2130_CS      -1 //PA30 S2_nCS
+#define E0_CS_PIN          -1 //PA30 S2_nCS
 
 #define E1_STEP_PIN        -1
 #define E1_DIR_PIN         -1
@@ -81,14 +81,14 @@
 
 #define LED_PIN            -1
 #define PS_ON_PIN          -1
-//#define Z_PROBE_PIN      -1
+#define Z_MIN_PROBE_PIN        33 //PB1  ENDSTOP2 (G38.3 Endstop)
 //#define CONTROLLERFAN_PIN  -1 //Marlin1
 #define CONTROLLER_FAN_PIN -1 //Marlin2.0
 
 #define FAN_PIN             -1 //15 //PA15 S_FAN_12V //"You cannot set E0_AUTO_FAN_PIN equal to FAN_PIN."
 #define FAN2_PIN            -1
 
-#define HEATER_0_PIN        16
+#define HEATER_0_PIN         1
 #define HEATER_1_PIN        -1
 #define HEATER_2_PIN        -1
 #define HEATER_BED_PIN      38 //PB6 SWDIO, Used as a dummy pin to prevent compile error if BED thermistor is used. It will not actually output unless reconfigured in CCFG_SYSIO.
