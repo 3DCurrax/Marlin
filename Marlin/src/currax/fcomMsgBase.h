@@ -61,7 +61,10 @@ public:
    // Constants.
 
    // Header length.
-   static const int cLength = 16;
+   static const int cLength = 4;
+
+   // Synch word.
+   static const unsigned short cSyncWord1 = 0x1234;
 
    //***************************************************************************
    //***************************************************************************
@@ -69,10 +72,9 @@ public:
    // Members.
 
    // Header Content.
-   int   mSyncWord1;
-   int   mSyncWord2;
-   int   mMessageIdentifier;
-   int   mMessageLength;
+   unsigned short mSyncWord1;
+   unsigned char  mMessageIdentifier;
+   unsigned char  mMessageLength;
 
    //***************************************************************************
    //***************************************************************************

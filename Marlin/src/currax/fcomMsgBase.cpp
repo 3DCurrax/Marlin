@@ -21,8 +21,7 @@ namespace FCom
 
 Header::Header()
 {
-   mSyncWord1         = 0x11111111;
-   mSyncWord2         = 0x22222222;
+   mSyncWord1         = cSyncWord1;
    mMessageIdentifier = 0;
    mMessageLength     = 0;
 
@@ -33,7 +32,6 @@ Header::Header()
 void Header::reset()
 {
    mSyncWord1         = 0;
-   mSyncWord2         = 0;
    mMessageIdentifier = 0;
    mMessageLength     = 0;
 
@@ -55,7 +53,6 @@ void Header::reset()
 void Header::copyToFrom (Ris::ByteBuffer* aBuffer)
 {
    aBuffer->copy( &mSyncWord1         );
-   aBuffer->copy( &mSyncWord2         );
    aBuffer->copy( &mMessageIdentifier );
    aBuffer->copy( &mMessageLength     );
 }
@@ -221,8 +218,7 @@ bool MsgMonkey::extractMessageHeaderParms(Ris::ByteBuffer* aBuffer)
 
    // Test for error.
    bool tError =
-      tHeader.mSyncWord1 != 0x11111111 ||
-      tHeader.mSyncWord2 != 0x22222222 ||
+      tHeader.mSyncWord1 != Header::cSyncWord1 ||
       tHeader.mMessageLength < Header::cLength  ||
       tHeader.mMessageLength > MsgDefT::cMsgBufferSize;
 
