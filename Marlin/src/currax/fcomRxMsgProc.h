@@ -56,7 +56,6 @@ public:
    // Methods.
 
    // Specific receive message handlers.
-   void processRxMsg (TestMsg*        aRxMsg);
    void processRxMsg (SettingsMsg*    aRxMsg);
    void processRxMsg (EchoRequestMsg* aRxMsg);
 };

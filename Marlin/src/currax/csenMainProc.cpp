@@ -46,35 +46,6 @@ void MainProc::initialize()
 //******************************************************************************
 //******************************************************************************
 //******************************************************************************
-// Configure. This sets the timer modulo. If it is zero then it
-//  is disabled.
-
-void MainProc::configure(int aTimerModulo)
-{
-   // First do this to disable processing during the timer interrupt.
-   gSettings.mEnableFlag = false;
-
-   // Set the timer modulo. If it is not zero then enable.
-   gSettings.mTimerModulo = aTimerModulo;
-   if (gSettings.mTimerModulo) gSettings.mEnableFlag = true;
-}
-
-//******************************************************************************
-//******************************************************************************
-//******************************************************************************
-// Return the state as a string. This is not thread safe.
-
-static char rStateString[MainProc::cMaxStringSize];
-
-char* MainProc::getStateString()
-{
-   sprintf(rStateString,"CSenMainProc %d",mTimerCount);
-   return rStateString;
-}
-
-//******************************************************************************
-//******************************************************************************
-//******************************************************************************
 // This is called by the temperature timer isr.
 // 
 // Periodically create a sample message and write it to the transmit
@@ -96,7 +67,7 @@ void MainProc::onTimer()
    mSeqNum++;
 
    // Try to create a message.
-   FCom::SampleMsg* tMsg = (FCom::SampleMsg*)FCom::createMsg(FCom::cSampleMsg);
+   FCom::SampleMsg* tMsg = (FCom::SampleMsg*)FCom::createMsgFromBlockPool(FCom::cSampleMsg);
    tMsg->mTimerCount = mTimerCount;
 
    // Test if the message was created.
@@ -106,7 +77,7 @@ void MainProc::onTimer()
       if (!mTxPointerQueue.tryWrite(tMsg))
       {
          // The pointer queue was full.
-         FCom::destroyMsg(tMsg);
+         FCom::destroyMsgFromBlockPool(tMsg);
          mDropCount++;
       }
    }
@@ -133,6 +104,8 @@ void MainProc::onIdle()
    {
       // If there was a message then send it to the host.
       FCom::gMsgPort.doSendMsg(tMsg);
+      // Delete the message.
+      FCom::destroyMsgFromBlockPool(tMsg);
    }
 
    // Poll the message port for a received message.

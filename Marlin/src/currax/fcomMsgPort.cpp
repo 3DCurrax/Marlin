@@ -69,8 +69,8 @@ void MsgPort::initialize()
 //******************************************************************************
 //******************************************************************************
 //******************************************************************************
-// Send a message. This copies a message into a byte buffer and then
-// deletes it. If there are enough bytes available in the transmit buffer
+// Send a message. This copies a message into a byte buffer and does not
+// delete it. If there are enough bytes available in the transmit buffer
 // then it sends the byte buffer out the comm channel. If there are not
 // enough bytes in the transmit buffer then the message is dropped.
 
@@ -81,9 +81,6 @@ void MsgPort::doSendMsg(BaseMsg* aMsg)
 
    // Copy the message to the byte buffer.
    mMonkey.putMsgToBuffer(&mTxByteBuffer,aMsg);
-
-   // Delete the message.
-   mMonkey.destroyMsg(aMsg);
 
    // If there are enough bytes available in the transmit buffer then
    // transmit the byte buffer.

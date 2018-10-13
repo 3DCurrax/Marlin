@@ -14,18 +14,6 @@ Currax sensor processing unit central interface.
    // Initialize the package. This is called from the setup routine.
    void csen_initialize();
 
-   // Configure. This sets the timer modulo. If it is zero then it
-   // is disabled.
-   void csen_configure(int aTimerModulo);
-
-   //***************************************************************************
-   //***************************************************************************
-   //***************************************************************************
-   // Methods:
-
-   // Return the state as a string.
-   char* csen_get_state_string();
-
    //***************************************************************************
    //***************************************************************************
    //***************************************************************************

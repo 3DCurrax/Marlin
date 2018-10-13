@@ -209,6 +209,12 @@ void* createMsg(int aMessageType);
 // Destroy a message.
 void destroyMsg(void* aMsg);
 
+// Create a new message from the block pool, based on a message type.
+void* createMsgFromBlockPool(int aMessageType);
+
+// Destroy a message from the block pool.
+void destroyMsgFromBlockPool(void* aMsg);
+
 //******************************************************************************
 //******************************************************************************
 //******************************************************************************

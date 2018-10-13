@@ -98,8 +98,8 @@ public:
    //***************************************************************************
    // Methods.
 
-   // Send a message. This copies a message into a byte buffer and then
-   // deletes it. If there are enough bytes available in the transmit buffer
+   // Send a message. This copies a message into a byte buffer and does not
+   // delete it. If there are enough bytes available in the transmit buffer
    // then it sends the byte buffer out the comm channel. If there are not
    // enough bytes in the transmit buffer then the message is dropped.
    void doSendMsg(BaseMsg* aMsg);

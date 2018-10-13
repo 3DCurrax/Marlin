@@ -39,9 +39,6 @@ void RxMsgProc::processRxMsg(BaseMsg* aMsg)
    // Call a corresponding specfic message handler method.
    switch (aMsg->mMessageType)
    {
-      case FCom::cTestMsg :
-         processRxMsg((FCom::TestMsg*)aMsg);
-         break;
       case FCom::cSettingsMsg :
          processRxMsg((FCom::SettingsMsg*)aMsg);
          break;
@@ -50,20 +47,8 @@ void RxMsgProc::processRxMsg(BaseMsg* aMsg)
          break;
       default :
          hw_cdc0_print("Unrecognized RxMsgProc::processRxMsg %d",aMsg->mMessageType);
-         destroyMsg(aMsg);
          break;
    }
-}
-
-//******************************************************************************
-//******************************************************************************
-//******************************************************************************
-// Rx message handler - TestMsg
-
-void RxMsgProc::processRxMsg(FCom::TestMsg* aMsg)
-{
-   hw_cdc0_print("RxMsgProc::processRxMsg_TestMsg %d",aMsg->mCode1);
-   destroyMsg(aMsg);
 }
 
 //******************************************************************************
@@ -79,9 +64,6 @@ void RxMsgProc::processRxMsg(FCom::SettingsMsg* aMsg)
    // Copy the settings variables from the received message.
    CSen::gSettings.mTimerModulo = aMsg->mTimerModulo;
    CSen::gSettings.mEnableFlag  = aMsg->mEnable;
-
-   // Destroy the received message.
-   destroyMsg(aMsg);
 }
 
 //******************************************************************************
@@ -91,19 +73,10 @@ void RxMsgProc::processRxMsg(FCom::SettingsMsg* aMsg)
 
 void RxMsgProc::processRxMsg(FCom::EchoRequestMsg* aRxMsg)
 {
-   // Try to create a response message.
-   EchoResponseMsg* tTxMsg = (EchoResponseMsg*)createMsg(FCom::cEchoResponseMsg);
-
-   // Test if the response message was created.
-   if (tTxMsg)
-   {
-      // Send the response message.
-      tTxMsg->mCode1 = aRxMsg->mCode1;
-      gMsgPort.doSendMsg(tTxMsg);
-   }
-
-   // Destroy the request message.
-   destroyMsg(aRxMsg);
+   // Send an echo response message.
+   EchoResponseMsg tTxMsg;
+   tTxMsg.mCode1 = aRxMsg->mCode1;
+   gMsgPort.doSendMsg(&tTxMsg);
 }
 
 //******************************************************************************

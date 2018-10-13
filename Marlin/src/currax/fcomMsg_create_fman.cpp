@@ -21,7 +21,7 @@ namespace FCom
 // Create a new message.
 // Allocate the message from the block pool, based on a message type.
 
-void* createMsg(int aMessageType)
+void* createMsgFromBlockPool(int aMessageType)
 {
    // Block pointer.
    void* tBlockPointer = 0;
@@ -70,10 +70,65 @@ void* createMsg(int aMessageType)
 // Destroy a message.
 // Deallocate it back to the block pool, based on the message type.
 
-void destroyMsg(void* aMsg)
+void destroyMsgFromBlockPool(void* aMsg)
 {
    // Deallocate the block back to the block pool
    CC::deallocateBlockPoolBlock(aMsg);
+}
+
+//******************************************************************************
+//******************************************************************************
+//******************************************************************************
+// Create a new message.
+// Allocate the message from the global one message storage. The lifetime of
+// the message is short, there can only be one created message. 
+
+static char gSingleRxMsgBlock[MsgDefT::cMsgBufferSize];
+
+void* createMsg(int aMessageType)
+{
+   // Block pointer.
+   void* tBlockPointer = &gSingleRxMsgBlock;
+
+   // Call the constructor with placement new on the block pointer.
+   BaseMsg* tMsg = 0;
+
+   switch (aMessageType)
+   {
+   case cTestMsg:
+      tMsg = new (tBlockPointer) TestMsg;
+      break;
+   case cSampleMsg:
+      tMsg = new (tBlockPointer) SampleMsg;
+      break;
+   case cStatusMsg:
+      tMsg = new (tBlockPointer) StatusMsg;
+      break;
+   case cSettingsMsg:
+      tMsg = new (tBlockPointer) SettingsMsg;
+      break;
+   case cEchoRequestMsg:
+      tMsg = new (tBlockPointer) EchoRequestMsg;
+      break;
+   case cEchoResponseMsg:
+      tMsg = new (tBlockPointer) EchoResponseMsg;
+      break;
+   default:
+      return 0;
+      break;
+   }
+
+   // Return the new message.
+   return tMsg;
+}
+
+//******************************************************************************
+//******************************************************************************
+//******************************************************************************
+// Destroy a message.
+
+void destroyMsg(void* aMsg)
+{
 }
 
 //******************************************************************************
