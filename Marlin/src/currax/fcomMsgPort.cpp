@@ -57,9 +57,6 @@ void MsgPort::initialize()
    mTxByteBuffer.memAlloc(tMemorySize);
    mRxByteBuffer.memAlloc(tMemorySize);
 
-   mMonkey.configureByteBuffer(&mTxByteBuffer);
-   mMonkey.configureByteBuffer(&mRxByteBuffer);
-
    // Initialize receiver header variables.
    mHeaderLength = mMonkey.getHeaderLength();
    mHeaderBuffer.initialize(mHeaderLength);
