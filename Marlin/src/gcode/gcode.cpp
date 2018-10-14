@@ -28,6 +28,8 @@
 #include "gcode.h"
 GcodeSuite gcode;
 
+#include "../currax/csen_print.h"
+
 #include "parser.h"
 #include "queue.h"
 #include "../module/motion.h"
@@ -146,6 +148,9 @@ void GcodeSuite::process_next_command() {
 
   // Parse the next command in the queue
   parser.parse(current_command);
+
+  // Print the string to the currax fcom host.
+  csen_print(current_command);
 
   // Handle a known G, M, or T
   switch (parser.command_letter) {
