@@ -8,6 +8,7 @@
 #include "Adafruit_PWMServoDriver.h"
 
 #include "../../gcode.h"
+#include "../../../currax/csen_print.h"
 
 Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver(PCA9685_I2C_ADDR); //7bit address
 
@@ -51,14 +52,18 @@ void GcodeSuite::M452() { //M452 P<channel> S<dutycycle>  // Set LED Driver duty
 
 void GcodeSuite::M453() { //M453 LED Driver On (Controls LED Enable Pin)
 	SERIAL_ECHOLNPGM("LED driver enabled.");
+   csen_print("PCA9685_ENABLE LOW   BEGIN");
 	pinMode(PCA9685_ENABLE_PIN,OUTPUT);
 	digitalWrite(PCA9685_ENABLE_PIN,LOW);
+   csen_print("PCA9685_ENABLE LOW   END");
 }
 
 void GcodeSuite::M454() { //M454 LED Driver Off (Controls LED Enable Pin)
 	SERIAL_ECHOLNPGM("LED driver disabled.");
+   csen_print("PCA9685_ENABLE HIGH  BEGIN");
 	pinMode(PCA9685_ENABLE_PIN,OUTPUT);
 	digitalWrite(PCA9685_ENABLE_PIN,HIGH);
+   csen_print("PCA9685_ENABLE HIGH  END");
 }
 
 #endif //HAVE_PCA9685
