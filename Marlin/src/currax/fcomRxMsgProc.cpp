@@ -59,11 +59,11 @@ void RxMsgProc::processRxMsg(BaseMsg* aMsg)
 void RxMsgProc::processRxMsg(FCom::SettingsMsg* aMsg)
 {
    // First do this to disable processing during the timer interrupt.
-   CSen::gSettings.mEnableFlag = false;
+   CSen::gSettings.mSampleEnable = false;
 
    // Copy the settings variables from the received message.
    CSen::gSettings.mTimerModulo = aMsg->mTimerModulo;
-   CSen::gSettings.mEnableFlag  = aMsg->mEnable;
+   CSen::gSettings.mSampleEnable  = aMsg->mSampleEnable;
 }
 
 //******************************************************************************

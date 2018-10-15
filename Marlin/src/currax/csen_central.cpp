@@ -6,7 +6,6 @@ Description:
 //******************************************************************************
 //******************************************************************************
 
-#include "MainMemory.h"
 #include "csenMainProc.h"
 #include "csen_central.h"
 
@@ -19,7 +18,6 @@ using namespace CSen;
 // Initialize the package. This is called from the setup routine.
 void csen_initialize()
 {
-   main_memory_initialize();
    gMainProc.initialize();
 }
 

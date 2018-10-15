@@ -21,7 +21,7 @@ namespace CSen
 
 Settings::Settings()
 {
-   mEnableFlag = false;
+   mSampleEnable = false;
    mTimerModulo = 0;
 }
 

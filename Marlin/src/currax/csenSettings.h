@@ -34,7 +34,7 @@ public:
 
    // If true then sensor processing is enabled. Sensors will be read
    // and sensor values will be sent to the host.
-   bool mEnableFlag;
+   bool mSampleEnable;
 
    // Timer isr counter modulo.
    // If timer count % timer modulo == 0 then the queue is written to.

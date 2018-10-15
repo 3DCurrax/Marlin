@@ -39,7 +39,7 @@ MainProc::MainProc()
 
 void MainProc::initialize()
 {
-   mTxPointerQueue.initialize(cSensorQueueSize);
+   mTxSampleMsgQueue.reset();
    FCom::gMsgPort.initialize();
 }
 
@@ -54,7 +54,7 @@ void MainProc::initialize()
 void MainProc::onTimer()
 {
    // Guard.
-   if (!gSettings.mEnableFlag) return;
+   if (!gSettings.mSampleEnable) return;
    if (gSettings.mTimerModulo == 0) return;
 
    // Increment the counter.
@@ -66,20 +66,20 @@ void MainProc::onTimer()
    // Increment the sequence number.
    mSeqNum++;
 
-   // Try to create a message.
-   FCom::SampleMsg* tMsg = (FCom::SampleMsg*)FCom::createMsgFromBlockPool(FCom::cSampleMsg);
-   tMsg->mTimerCount = mTimerCount;
-
-   // Test if the message was created.
-   if (tMsg)
+   // Try to write a message to the transmit message queue.
+   if (FCom::SampleMsg* tMsg = mTxSampleMsgQueue.startWrite())
    {
-      // Try to write the message to the pointer queue.
-      if (!mTxPointerQueue.tryWrite(tMsg))
-      {
-         // The pointer queue was full.
-         FCom::destroyMsgFromBlockPool(tMsg);
-         mDropCount++;
-      }
+      // Call the message constructor.
+      new(tMsg) FCom::SampleMsg;
+      // Set message variables.
+      tMsg->mTimerCount = mTimerCount;
+      // Finish the write to the message queue.
+      mTxSampleMsgQueue.finishWrite();
+   }
+   // The message queue was full.
+   else
+   {
+      mDropCount++;
    }
 }
 
@@ -88,7 +88,7 @@ void MainProc::onTimer()
 //******************************************************************************
 // This is called during the main loop idle processing.
 // 
-// Read from the transmit pointer queue and send available messages to
+// Read from the transmit message queue and send available messages to
 // the host via the comm channel.
 // 
 // Poll the comm channel for messages received from the host and process
@@ -96,24 +96,21 @@ void MainProc::onTimer()
 
 void MainProc::onIdle()
 {
-   FCom::BaseMsg* tMsg = 0;
-
-   // Try to read a message from the transmit pointer queue.
-   tMsg = 0;
-   if (mTxPointerQueue.tryRead(&tMsg))
+   // Poll the transmit message queue for an available message.
+   if (FCom::SampleMsg* tTxMsg = mTxSampleMsgQueue.startRead())
    {
       // If there was a message then send it to the host.
-      FCom::gMsgPort.doSendMsg(tMsg);
-      // Delete the message.
-      FCom::destroyMsgFromBlockPool(tMsg);
+      FCom::gMsgPort.doSendMsg(tTxMsg);
+      // Finish the read from the message queue.
+      mTxSampleMsgQueue.finishRead();
    }
 
    // Poll the message port for a received message.
-   tMsg = 0;
-   if (FCom::gMsgPort.doPollForRxMsg(tMsg))
+   FCom::BaseMsg* tRxMsg = 0;
+   if (FCom::gMsgPort.doPollForRxMsg(tRxMsg))
    {
       // If there was a message then process it.
-      FCom::gRxMsgProc.processRxMsg(tMsg);
+      FCom::gRxMsgProc.processRxMsg(tRxMsg);
    }
 }
 
