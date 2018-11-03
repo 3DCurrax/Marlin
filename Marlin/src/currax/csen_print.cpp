@@ -22,6 +22,9 @@ Description:
 
 void csen_print(char* const aString)
 {
+   // Guard.
+   if (!CSen::gSettings.mPrintEnable) return;
+
    // Send a print message.
    FCom::PrintMsg tMsg;
    strncpy(&tMsg.mString[0],aString,FCom::PrintMsg::cMaxSize);

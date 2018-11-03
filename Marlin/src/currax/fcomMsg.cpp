@@ -76,6 +76,7 @@ void StatusMsg::copyToFrom(Ris::ByteBuffer* aBuffer)
 SettingsMsg::SettingsMsg()
 {
    mMessageType = cSettingsMsg;
+   mPrintEnable = false;
    mSampleEnable = false;
    mTimerModulo = 0;
 }
@@ -84,6 +85,7 @@ void SettingsMsg::copyToFrom(Ris::ByteBuffer* aBuffer)
 {
    mHeader.headerCopyToFrom(aBuffer, this);
 
+   aBuffer->copy(&mPrintEnable);
    aBuffer->copy(&mSampleEnable);
    aBuffer->copy(&mTimerModulo);
 

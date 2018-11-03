@@ -21,6 +21,7 @@ namespace CSen
 
 Settings::Settings()
 {
+   mPrintEnable = false;
    mSampleEnable = false;
    mTimerModulo = 0;
 }

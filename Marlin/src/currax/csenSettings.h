@@ -32,6 +32,9 @@ public:
    //***************************************************************************
    // Members:
 
+   // If true then prints are enabled. 
+   bool mPrintEnable;
+
    // If true then sensor processing is enabled. Sensors will be read
    // and sensor values will be sent to the host.
    bool mSampleEnable;

@@ -62,8 +62,9 @@ void RxMsgProc::processRxMsg(FCom::SettingsMsg* aMsg)
    CSen::gSettings.mSampleEnable = false;
 
    // Copy the settings variables from the received message.
-   CSen::gSettings.mTimerModulo = aMsg->mTimerModulo;
+   CSen::gSettings.mPrintEnable = aMsg->mPrintEnable;
    CSen::gSettings.mSampleEnable  = aMsg->mSampleEnable;
+   CSen::gSettings.mTimerModulo = aMsg->mTimerModulo;
 }
 
 //******************************************************************************

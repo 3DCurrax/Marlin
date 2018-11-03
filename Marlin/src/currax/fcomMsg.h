@@ -135,6 +135,7 @@ public:
    //***************************************************************************
    // Members.
 
+   bool mPrintEnable;
    bool mSampleEnable;
    int  mTimerModulo;
 
